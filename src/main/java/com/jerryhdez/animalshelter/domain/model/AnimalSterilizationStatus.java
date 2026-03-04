@@ -1,6 +1,6 @@
 package com.jerryhdez.animalshelter.domain.model;
 
-public enum Sterilized {
+public enum AnimalSterilizationStatus {
     YES,
     NO,
     UNKNOWN

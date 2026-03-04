@@ -1,6 +1,6 @@
 package com.jerryhdez.animalshelter.domain.model;
 
-public enum Species{
+public enum AnimalSpecies {
     DOG,
     CAT,
     BIRD,

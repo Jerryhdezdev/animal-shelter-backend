@@ -22,11 +22,11 @@ public class Animal {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Species species;
+    private AnimalSpecies Species;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Sex sex;
+    private AnimalSex sex;
 
     @Column (nullable = false)
     private LocalDate birthDate;
@@ -36,19 +36,19 @@ public class Animal {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Size size;
+    private AnimalSize size;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
-    private Vaccinated vaccinated;
+    private AnimalVaccinationStatus vaccinationStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Sterilized sterilized;
+    private AnimalSterilizationStatus sterilizationStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AdoptionStatus adoptionStatus;
+    private AdoptionStatus status;
 
     @Column(nullable = false)
     private LocalDate intakeDate;
