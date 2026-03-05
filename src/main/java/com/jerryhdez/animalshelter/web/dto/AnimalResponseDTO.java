@@ -1,30 +1,32 @@
 package com.jerryhdez.animalshelter.web.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@Getter
+@Setter
 public class AnimalResponseDTO {
 
+    // Unique identifier assigned by the database
     private Long id;
+
+    // Basic information
     private String name;
     private String species;
-    private String birthDate;
+    private String sex;
+    private LocalDate birthDate;
+    private BigDecimal weight;
     private String size;
 
-    public AnimalResponseDTO() {}
+    // Health information
+    private String vaccinationStatus;
+    private String sterilizationStatus;
 
-    public AnimalResponseDTO(Long id,
-                             String name,
-                             String species,
-                             String birthDate,
-                             String size) {
-        this.id = id;
-        this.name = name;
-        this.species = species;
-        this.birthDate = birthDate;
-        this.size = size;
-    }
-
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getSpecies() { return species; }
-    public String getBirthDate() { return birthDate; }
-    public String getSize() { return size; }
+    // Shelter information
+    private String adoptionStatus;
+    private LocalDate intakeDate;
+    private String description;
 }
