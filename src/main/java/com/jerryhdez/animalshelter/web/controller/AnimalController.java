@@ -43,6 +43,19 @@ public class AnimalController {
         return ResponseEntity.ok(animals); // HTTP 200
     }
 
+    // GET / api/v1/anmimal{id} - retrieves a single animal by id
+    @GetMapping("/{id}")
+    public ResponseEntity<AnimalResponseDTO> getAnimalById(@PathVariable Long id){
+
+        //Finds animal - throws AnimalNotFoundException if not found
+        Animal animal = animalService.getAnimalById(id);
+
+        //Converts entity to response DTO
+        AnimalResponseDTO response = animalMapper.toResponse(animal);
+
+        return ResponseEntity.ok(response); //HTTP 200
+    }
+
     // POST /api/v1/animals — creates a new animal
     @PostMapping
     public ResponseEntity<AnimalResponseDTO> createAnimal(
