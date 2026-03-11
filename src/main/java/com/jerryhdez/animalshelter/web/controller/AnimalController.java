@@ -72,4 +72,23 @@ public class AnimalController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // HTTP 201
     }
+
+    // PUT /api/v1/animals{id} - updates an existing animal
+    @PutMapping("/{id}")
+    public ResponseEntity<AnimalResponseDTO> updateAnimal(
+            @PathVariable Long id,
+            @Valid @RequestBody AnimalRequestDTO request){
+
+        // Convert request DTO to entity
+        Animal updatedAnimal = animalMapper.toEntity(request);
+
+        // Update animal in database - throws AnimalNotFoundException if not found
+        Animal savedAnimal = animalService.updateAnimal(id, updatedAnimal);
+
+        // Convert update entity to response DTO
+        AnimalResponseDTO response = animalMapper.toResponse(savedAnimal);
+
+        return ResponseEntity.ok(response); //HTTP 200
+    }
+
 }
