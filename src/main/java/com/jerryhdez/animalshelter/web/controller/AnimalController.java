@@ -90,5 +90,14 @@ public class AnimalController {
 
         return ResponseEntity.ok(response); //HTTP 200
     }
+    // DELETE /api/v1/animals/{id} - deletes an existing animal
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAnimal(@PathVariable Long id){
+
+        // Delete animal - throws AnimalNotFoundException if not found
+        animalService.deleteAnimal(id);
+
+        return ResponseEntity.noContent().build(); // HTTP 204
+    }
 
 }

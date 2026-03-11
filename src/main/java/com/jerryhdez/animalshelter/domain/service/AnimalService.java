@@ -54,4 +54,15 @@ public class AnimalService {
         // Save and return the updated animal
         return animalRepository.save(existingAnimal);
     }
+
+    // Deletes an existing animal - throws exception if not found
+    public void deleteAnimal(Long id){
+
+        // First verify the animal exists - throws exception if not
+        Animal existingAnimal = animalRepository.findById(id)
+                .orElseThrow(() -> new AnimalNotFoundException(id));
+
+        //Delete the animal from the database
+        animalRepository.delete(existingAnimal);
+    }
 }
