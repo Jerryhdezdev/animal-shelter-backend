@@ -72,7 +72,7 @@ http://localhost:8080
     "weight": 25.5,
     "animalSize": "LARGE",
     "animalVaccinationStatus": "FULL_VACCINATED",
-    "animalSterilizationStatus": "YES",
+    "animalSterilizationStatus": "STERILIZED",
     "description": "Max is a friendly and energetic dog who loves to play"
 }
 ```
@@ -88,7 +88,7 @@ http://localhost:8080
     "weight": 25.5,
     "size": "LARGE",
     "vaccinationStatus": "FULL_VACCINATED",
-    "sterilizationStatus": "YES",
+    "sterilizationStatus": "STERILIZED",
     "adoptionStatus": "INTAKE_ASSESSMENT",
     "intakeDate": "2026-03-11",
     "description": "Max is a friendly and energetic dog who loves to play"
