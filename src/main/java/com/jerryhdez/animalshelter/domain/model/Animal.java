@@ -69,4 +69,5 @@ public class Animal {
     protected void onCreate() {
         this.createdAt = LocalDate.now();
     }
+
 }
