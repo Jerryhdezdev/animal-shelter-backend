@@ -1,10 +1,10 @@
 package com.jerryhdez.animalshelter.web.dto;
 
-import com.jerryhdez.animalshelter.domain.model.AnimalSpecies;
-import com.jerryhdez.animalshelter.domain.model.AnimalSex;
-import com.jerryhdez.animalshelter.domain.model.AnimalSize;
-import com.jerryhdez.animalshelter.domain.model.AnimalVaccinationStatus;
-import com.jerryhdez.animalshelter.domain.model.AnimalSterilizationStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSpecies;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSex;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSize;
+import com.jerryhdez.animalshelter.domain.enums.AnimalVaccinationStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSterilizationStatus;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

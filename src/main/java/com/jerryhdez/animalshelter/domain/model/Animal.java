@@ -1,5 +1,6 @@
 package com.jerryhdez.animalshelter.domain.model;
 
+import com.jerryhdez.animalshelter.domain.enums.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,7 +52,7 @@ public class Animal {
     // Shelter information
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AdoptionStatus status;
+    private AnimalAdoptionStatus status;
 
     @Column(nullable = false)
     private LocalDate intakeDate;

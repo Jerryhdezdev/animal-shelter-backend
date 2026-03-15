@@ -1,6 +1,7 @@
 package com.jerryhdez.animalshelter.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jerryhdez.animalshelter.domain.enums.*;
 import com.jerryhdez.animalshelter.domain.model.*;
 import com.jerryhdez.animalshelter.domain.service.AnimalService;
 import com.jerryhdez.animalshelter.exception.AnimalNotFoundException;

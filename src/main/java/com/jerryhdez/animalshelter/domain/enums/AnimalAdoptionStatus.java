@@ -1,6 +1,6 @@
-package com.jerryhdez.animalshelter.domain.model;
+package com.jerryhdez.animalshelter.domain.enums;
 
-public enum AdoptionStatus {
+public enum AnimalAdoptionStatus {
     INTAKE_ASSESSMENT,  // Animal just entered the shelter - under initial evaluation
     QUARANTINE,         // Animal isolated due to health concerns
     MEDICAL_HOLD,       // Animal receiving medical treatment

@@ -1,7 +1,7 @@
 package com.jerryhdez.animalshelter.web.mapper;
 
 import com.jerryhdez.animalshelter.domain.model.Animal;
-import com.jerryhdez.animalshelter.domain.model.AdoptionStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalAdoptionStatus;
 import com.jerryhdez.animalshelter.web.dto.AnimalRequestDTO;
 import com.jerryhdez.animalshelter.web.dto.AnimalResponseDTO;
 import org.springframework.stereotype.Component;
@@ -32,7 +32,7 @@ public class AnimalMapper {
 
         // Fields assigned automatically by the system — not provided by the user
         animal.setIntakeDate(LocalDate.now());
-        animal.setStatus(AdoptionStatus.INTAKE_ASSESSMENT);
+        animal.setStatus(AnimalAdoptionStatus.INTAKE_ASSESSMENT);
 
         return animal;
     }

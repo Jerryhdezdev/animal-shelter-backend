@@ -1,5 +1,6 @@
 package com.jerryhdez.animalshelter.web.mapper;
 
+import com.jerryhdez.animalshelter.domain.enums.*;
 import com.jerryhdez.animalshelter.domain.model.*;
 import com.jerryhdez.animalshelter.web.dto.AnimalRequestDTO;
 import com.jerryhdez.animalshelter.web.dto.AnimalResponseDTO;
@@ -43,7 +44,7 @@ class AnimalMapperTest {
         animal.setSize(AnimalSize.LARGE);
         animal.setVaccinationStatus(AnimalVaccinationStatus.FULL_VACCINATED);
         animal.setSterilizationStatus(AnimalSterilizationStatus.STERILIZED);
-        animal.setStatus(AdoptionStatus.INTAKE_ASSESSMENT);
+        animal.setStatus(AnimalAdoptionStatus.INTAKE_ASSESSMENT);
         animal.setIntakeDate(LocalDate.now());
         animal.setDescription("Max is a friendly dog");
         return animal;
@@ -90,7 +91,7 @@ class AnimalMapperTest {
         Animal animal = animalMapper.toEntity(request);
 
         // ASSERT — every new animal starts with INTAKE_ASSESSMENT
-        assertThat(animal.getStatus()).isEqualTo(AdoptionStatus.INTAKE_ASSESSMENT);
+        assertThat(animal.getStatus()).isEqualTo(AnimalAdoptionStatus.INTAKE_ASSESSMENT);
     }
 
     @Test

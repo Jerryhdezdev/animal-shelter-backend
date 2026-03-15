@@ -1,12 +1,12 @@
 package com.jerryhdez.animalshelter.domain.service;
 
 import com.jerryhdez.animalshelter.domain.model.Animal;
-import com.jerryhdez.animalshelter.domain.model.AdoptionStatus;
-import com.jerryhdez.animalshelter.domain.model.AnimalSpecies;
-import com.jerryhdez.animalshelter.domain.model.AnimalSex;
-import com.jerryhdez.animalshelter.domain.model.AnimalSize;
-import com.jerryhdez.animalshelter.domain.model.AnimalVaccinationStatus;
-import com.jerryhdez.animalshelter.domain.model.AnimalSterilizationStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalAdoptionStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSpecies;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSex;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSize;
+import com.jerryhdez.animalshelter.domain.enums.AnimalVaccinationStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSterilizationStatus;
 import com.jerryhdez.animalshelter.domain.repository.AnimalRepository;
 import com.jerryhdez.animalshelter.exception.AnimalNotFoundException;
 
@@ -47,7 +47,7 @@ public class AnimalServiceTest {
         animal.setSize(AnimalSize.LARGE);
         animal.setVaccinationStatus(AnimalVaccinationStatus.FULL_VACCINATED);
         animal.setSterilizationStatus(AnimalSterilizationStatus.STERILIZED);
-        animal.setStatus(AdoptionStatus.INTAKE_ASSESSMENT);
+        animal.setStatus(AnimalAdoptionStatus.INTAKE_ASSESSMENT);
         animal.setIntakeDate(LocalDate.now());
         animal.setDescription("Max is a friendly dog");
         return animal;
