@@ -4,6 +4,6 @@ package com.jerryhdez.animalshelter.exception;
 public class AnimalNotFoundException extends RuntimeException {
 
     public AnimalNotFoundException(Long id){
-        super("Animal not found with id " + id);
+        super("Animal with id " + id + "not found");
     }
 }

@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handles the case when an animal is not found in the database
+    // Handles the case when an animal/user is not found in the database
     @ExceptionHandler(AnimalNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleAnimalNotFoundException(
+    public ResponseEntity<ErrorResponseDTO> handleNotFoundException(
             AnimalNotFoundException ex) {
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()

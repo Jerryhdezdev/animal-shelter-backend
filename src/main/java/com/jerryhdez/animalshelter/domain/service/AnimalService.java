@@ -16,7 +16,7 @@ public class AnimalService {
         this.animalRepository = animalRepository;
     }
 
-    // Get all animals from the database
+    // Gets all animals from the database
     public List<Animal> getAllAnimals() {
         return animalRepository.findAll();
     }
@@ -27,31 +27,30 @@ public class AnimalService {
                 .orElseThrow(() -> new AnimalNotFoundException(id));
     }
 
-    // Save a new animal to the database
+    // Saves a new animal to the database
     public Animal saveAnimal(Animal animal) {
         return animalRepository.save(animal);
     }
 
-    // Updates and existing animal - throws exception if not found
+    // Updates an existing animal - throws exception if not found
     public Animal updateAnimal(Long id, Animal updateAnimal){
 
-        // First verify the animal exists - throws exceptions if not
+        // First verifies the animal exists - throws exceptions if not
         Animal existingAnimal = animalRepository.findById(id)
                 .orElseThrow(() -> new AnimalNotFoundException(id));
 
-        // Update only the fields that are allowed to change
+        // Updates only the fields that are allowed to change
         existingAnimal.setName(updateAnimal.getName());
         existingAnimal.setSpecies(updateAnimal.getSpecies());
         existingAnimal.setSex(updateAnimal.getSex());
         existingAnimal.setBirthDate(updateAnimal.getBirthDate());
-        existingAnimal.setWeight(updateAnimal.getWeight());
         existingAnimal.setWeight(updateAnimal.getWeight());
         existingAnimal.setSize(updateAnimal.getSize());
         existingAnimal.setVaccinationStatus(updateAnimal.getVaccinationStatus());
         existingAnimal.setSterilizationStatus(updateAnimal.getSterilizationStatus());
         existingAnimal.setDescription(updateAnimal.getDescription());
 
-        // Save and return the updated animal
+        // Saves and returns the updated animal
         return animalRepository.save(existingAnimal);
     }
 
@@ -62,7 +61,7 @@ public class AnimalService {
         Animal existingAnimal = animalRepository.findById(id)
                 .orElseThrow(() -> new AnimalNotFoundException(id));
 
-        //Delete the animal from the database
+        //Deletes the animal from the database
         animalRepository.delete(existingAnimal);
     }
 }
