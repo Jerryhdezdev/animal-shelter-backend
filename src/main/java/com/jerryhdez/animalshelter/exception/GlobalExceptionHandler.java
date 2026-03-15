@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     // Handles the case when an animal/user is not found in the database
-    @ExceptionHandler(AnimalNotFoundException.class)
+    @ExceptionHandler({AnimalNotFoundException.class, UserNotFoundException.class})
     public ResponseEntity<ErrorResponseDTO> handleNotFoundException(
             AnimalNotFoundException ex) {
 
