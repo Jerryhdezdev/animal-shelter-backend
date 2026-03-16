@@ -26,9 +26,6 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = false)
-    private LocalDate dateOfBirth;
-
     @Column(nullable = false, unique = true)
     private String email;
 
