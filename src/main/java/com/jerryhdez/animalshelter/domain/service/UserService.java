@@ -1,6 +1,8 @@
 package com.jerryhdez.animalshelter.domain.service;
 
 import com.jerryhdez.animalshelter.domain.model.User;
+import com.jerryhdez.animalshelter.domain.enums.UserRoles;
+import com.jerryhdez.animalshelter.domain.enums.UserStatus;
 import com.jerryhdez.animalshelter.domain.repository.UserRepository;
 import com.jerryhdez.animalshelter.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,11 @@ public class UserService {
 
     // Saves a new user to the database
     public User saveUser(User user){
+
+        // System automatically assigns default values
+        user.setRole(UserRoles.ADOPTER);
+        user.setStatus(UserStatus.PENDING);
+
         return userRepository.save(user);
     }
 
