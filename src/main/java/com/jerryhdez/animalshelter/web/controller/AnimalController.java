@@ -43,7 +43,7 @@ public class AnimalController {
         return ResponseEntity.ok(animals); // HTTP 200
     }
 
-    // GET / api/v1/anmimal{id} - retrieves a single animal by id
+    // GET / api/v1/anmimal/{id} - retrieves a single animal by id
     @GetMapping("/{id}")
     public ResponseEntity<AnimalResponseDTO> getAnimalById(@PathVariable Long id){
 
@@ -61,31 +61,31 @@ public class AnimalController {
     public ResponseEntity<AnimalResponseDTO> createAnimal(
             @Valid @RequestBody AnimalRequestDTO request) {
 
-        // Convert request DTO to entity
+        // Converts request DTO to entity
         Animal animal = animalMapper.toEntity(request);
 
-        // Save entity to database
+        // Saves entity to database
         Animal savedAnimal = animalService.saveAnimal(animal);
 
-        // Convert saved entity back to response DTO
+        // Converts saved entity back to response DTO
         AnimalResponseDTO response = animalMapper.toResponse(savedAnimal);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // HTTP 201
     }
 
-    // PUT /api/v1/animals{id} - updates an existing animal
+    // PUT /api/v1/animals/{id} - updates an existing animal
     @PutMapping("/{id}")
     public ResponseEntity<AnimalResponseDTO> updateAnimal(
             @PathVariable Long id,
             @Valid @RequestBody AnimalRequestDTO request){
 
-        // Convert request DTO to entity
+        // Converts request DTO to entity
         Animal updatedAnimal = animalMapper.toEntity(request);
 
-        // Update animal in database - throws AnimalNotFoundException if not found
+        // Updates animal in database - throws AnimalNotFoundException if not found
         Animal savedAnimal = animalService.updateAnimal(id, updatedAnimal);
 
-        // Convert update entity to response DTO
+        // Converts updated entity to response DTO
         AnimalResponseDTO response = animalMapper.toResponse(savedAnimal);
 
         return ResponseEntity.ok(response); //HTTP 200
@@ -94,7 +94,7 @@ public class AnimalController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAnimal(@PathVariable Long id){
 
-        // Delete animal - throws AnimalNotFoundException if not found
+        // Deletes animal - throws AnimalNotFoundException if not found
         animalService.deleteAnimal(id);
 
         return ResponseEntity.noContent().build(); // HTTP 204
