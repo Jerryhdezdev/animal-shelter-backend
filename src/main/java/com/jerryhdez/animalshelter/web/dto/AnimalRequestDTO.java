@@ -24,35 +24,35 @@ import lombok.Setter;
 @Setter
 public class AnimalRequestDTO {
 
-    @NotBlank
-    @Size(min = 2, max = 100)
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
 
-    @NotNull
+    @NotNull(message = "Species is required")
     private AnimalSpecies animalSpecies;
 
-    @NotNull
+    @NotNull(message = "Sex is required")
     private AnimalSex animalSex;
 
-    @NotNull
-    @PastOrPresent
+    @NotNull(message = "Birth date is required")
+    @PastOrPresent(message = "Birth date cannot be a future date")
     private LocalDate birthDate;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Weight is required")
+    @Positive(message = "Weight must be a positive number")
     private BigDecimal weight;
 
-    @NotNull
+    @NotNull(message = "Size is required")
     private AnimalSize animalSize;
 
-    @NotNull
+    @NotNull(message = "Vaccination status is required")
     private AnimalVaccinationStatus animalVaccinationStatus;
 
-    @NotNull
+    @NotNull(message = "Sterilization status is required")
     private AnimalSterilizationStatus animalSterilizationStatus;
 
-    @NotBlank
-    @Size(min = 2, max = 1000)
+    @NotBlank(message = "Description is required")
+    @Size(min = 2, max = 1000, message = "Description must be between 2 and 1000 characters")
     private String description;
 
 }
