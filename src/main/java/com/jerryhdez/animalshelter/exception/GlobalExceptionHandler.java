@@ -1,5 +1,6 @@
 package com.jerryhdez.animalshelter.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,7 +17,7 @@ public class GlobalExceptionHandler {
     // Handles the case when an animal/user is not found in the database
     @ExceptionHandler({AnimalNotFoundException.class, UserNotFoundException.class})
     public ResponseEntity<ErrorResponseDTO> handleNotFoundException(
-            AnimalNotFoundException ex) {
+            RuntimeException ex) {
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .status(HttpStatus.NOT_FOUND.value())
@@ -50,6 +51,35 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    // Handles duplicate email or other unique constraint violations
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolation(
+        DataIntegrityViolationException ex) {
+
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .status(HttpStatus.CONFLICT.value())
+                .error("CONFLICT")
+                .message("Email already exists, please ty another one")
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    // Handles password match
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalArgument(
+            IllegalArgumentException ex){
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("BAD_REQUEST")
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     // Handles any unexpected exception that is not caught elsewhere
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
@@ -63,4 +93,6 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+
+
 }

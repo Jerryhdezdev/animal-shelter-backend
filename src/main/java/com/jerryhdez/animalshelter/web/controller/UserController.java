@@ -66,7 +66,7 @@ public class UserController {
         User user = userMapper.toEntity(request);
 
         // Saves entity to database
-        User savedUser = userService.saveUser(user);
+        User savedUser = userService.saveUser(user, request);
 
         // Converts saved entity back to response DTO
         UserResponseDTO response = userMapper.toResponse(savedUser);
@@ -84,7 +84,7 @@ public class UserController {
         User updatedUser = userMapper.toEntity(request);
 
         // Updates user in database - throws UserNotFoundException if not found
-        User savedUser = userService.updateUser(id, updatedUser);
+        User savedUser = userService.updateUser(id, updatedUser, request);
 
         // Converts update entity to response DTO
         UserResponseDTO response = userMapper.toResponse(savedUser);

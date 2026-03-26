@@ -12,24 +12,23 @@ import lombok.Setter;
 @Setter
 public class UserRequestDTO {
 
-    @NotBlank
-    @Size(min = 2, max = 100)
+    @NotBlank(message = "First name is required")
+    @Size(min = 2, max = 100, message = "First name must be between 2 and 100 characters")
     private String firstName;
 
-    @NotBlank
-    @Size(min = 2, max = 100)
+    @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 100, message = "Last name must be between 2 and 100 characters")
     private String lastName;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email format is invalid")
     private String email;
 
-    @NotBlank
-    @Size(min = 8, max = 64)
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters")
     private String password;
 
-    @NotBlank
-    @Size(min = 8, max = 64)
+    @NotBlank(message = "Please confirm your password")
     private String confirmPassword;
 
 }
