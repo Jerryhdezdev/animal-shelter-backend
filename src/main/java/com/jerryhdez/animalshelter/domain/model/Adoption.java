@@ -1,6 +1,6 @@
 package com.jerryhdez.animalshelter.domain.model;
 
-import com.jerryhdez.animalshelter.domain.enums.AnimalAdoptionStatus;
+import com.jerryhdez.animalshelter.domain.enums.AdoptionStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +35,7 @@ public class Adoption {
     @Column(nullable = false)
     private AdoptionStatus status;
 
-    @Colunm(nullable=true)
+    @Column(nullable=true)
     private LocalDate adoptionDate;
 
     @Lob
