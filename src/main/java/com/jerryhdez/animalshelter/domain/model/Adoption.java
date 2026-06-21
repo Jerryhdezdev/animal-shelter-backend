@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class Adoption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     // Relationships
     @ManyToOne
