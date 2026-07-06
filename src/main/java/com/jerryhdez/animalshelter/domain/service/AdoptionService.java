@@ -1,8 +1,14 @@
 package com.jerryhdez.animalshelter.domain.service;
 
 import com.jerryhdez.animalshelter.domain.model.Adoption;
+import com.jerryhdez.animalshelter.domain.model.Animal;
+import com.jerryhdez.animalshelter.domain.model.User;
 import com.jerryhdez.animalshelter.domain.enums.AdoptionStatus;
 import com.jerryhdez.animalshelter.domain.repository.AdoptionRepository;
+import com.jerryhdez.animalshelter.domain.repository.AnimalRepository;
+import com.jerryhdez.animalshelter.web.dto.AdoptionResponseDTO;
+import com.jerryhdez.animalshelter.web.dto.AdoptionRequestDTO;
+import com.jerryhdez.animalshelter.web.mapper.AdoptionMapper;
 import com.jerryhdez.animalshelter.exception.AdoptionNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -12,64 +18,63 @@ import java.util.List;
 public class AdoptionService {
 
     private final AdoptionRepository adoptionRepository;
+    private final AnimalRepository animalRepository;
+    private final AdoptionMapper adoptionMapper;
 
-    public AdoptionService(AdoptionRepository adoptionRepository) {
+    public AdoptionService(AdoptionRepository adoptionRepository,
+                           AnimalRepository animalRepository,
+                           AdoptionMapper adoptionMapper) {
         this.adoptionRepository = adoptionRepository;
+        this.animalRepository = animalRepository;
+        this.adoptionMapper = adoptionMapper;
     }
 
-    // Gets all adoptions request from the database
-    public List<Adoption> getAllAdoptions() {
-        return adoptionRepository.findAll();
+    // Gets all adoptions and converts them to response DTOs
+    public List<AdoptionResponseDTO> getAllAdoptions() {
+        return adoptionRepository.findAll()
+                .stream()
+                .map(adoptionMapper::toResponse)
+                .toList();
     }
 
-    // Retrieves a single adoption request by id - throws exception if not found
-    public Adoption findById(long id) {
-        return adoptionRepository.findById(id)
+    // Gets a single adoption by id and converts it to response DTO
+    public AdoptionResponseDTO getAdoptionById(long id) {
+        Adoption adoption = adoptionRepository.findById(id)
                 .orElseThrow(() -> new AdoptionNotFoundException(id));
+        return adoptionMapper.toResponse(adoption);
     }
 
-    // Saves a new adoption request to the database
-    public Adoption saveAdoption(Adoption adoption) {
-
-        // System automatically assigns default values
-        adoption.setStatus(AdoptionStatus.REQUESTED);
-
-        return adoptionRepository.save(adoption);
+    // Creates a new adoption request
+    public AdoptionResponseDTO createAdoption(AdoptionRequestDTO request, User adopter) {
+        Animal animal = animalRepository.findById(request.getAnimalId())
+                .orElseThrow(() -> new RuntimeException("Adoption not found"));
+        Adoption adoption = adoptionMapper.toEntity(request, adopter, animal);
+        Adoption saved = adoptionRepository.save(adoption);
+        return adoptionMapper.toResponse(saved);
     }
 
-    // For SHELTER STAFF only - updates the adoption status through the process
-    public Adoption updateStatus(long id, AdoptionStatus newStatus) {
-
-        // First verifies if the adoption request exists - throws exception if not
-        Adoption existingAdoption = adoptionRepository.findById(id)
+    // For SHELTER STAFF only - updates the adoption status
+    public AdoptionResponseDTO updateAdoption(long id, AdoptionStatus newStatus) {
+        Adoption existing = adoptionRepository.findById(id)
                 .orElseThrow(() -> new AdoptionNotFoundException(id));
-
-        // Shelter staff can move status
-        existingAdoption.setStatus(newStatus);
-
-        return adoptionRepository.save(existingAdoption);
+        existing.setStatus(newStatus);
+        Adoption saved = adoptionRepository.save(existing);
+        return adoptionMapper.toResponse(saved);
     }
 
     // For USER only - can only cancel their own adoption request
-    public Adoption cancelAdoption(long id) {
-
-        // First verifies if the adoption request exists - throws exception if not
-        Adoption existingAdoption = adoptionRepository.findById(id)
+    public AdoptionResponseDTO cancelAdoption(long id) {
+        Adoption existing = adoptionRepository.findById(id)
                 .orElseThrow(() -> new AdoptionNotFoundException(id));
-
-        // User can only cancel - no other status change is allowed
-        existingAdoption.setStatus(AdoptionStatus.CANCELLED);
-
-        return adoptionRepository.save(existingAdoption);
+        existing.setStatus(AdoptionStatus.CANCELLED);
+        Adoption saved = adoptionRepository.save(existing);
+        return adoptionMapper.toResponse(saved);
     }
 
-    // Deletes an existing adoption request - throws exceptions if not found
+    // Deletes an existing adoption request
     public void deleteAdoption(long id) {
-
-        // First verifies if the adoption request exists - throws exception if not
-        Adoption existingAdoption = adoptionRepository.findById(id)
+        Adoption existing = adoptionRepository.findById(id)
                 .orElseThrow(() -> new AdoptionNotFoundException(id));
-        adoptionRepository.delete(existingAdoption);
+        adoptionRepository.delete(existing);
     }
-
 }
