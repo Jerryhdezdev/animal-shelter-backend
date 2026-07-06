@@ -25,7 +25,7 @@ public class AnimalController {
     private final AnimalService animalService;
     private final AnimalMapper animalMapper;
 
-    // Constructor injection — recommended over @Autowired
+    // Constructor injection
     public AnimalController(AnimalService animalService,
                             AnimalMapper animalMapper) {
         this.animalService = animalService;
@@ -43,7 +43,7 @@ public class AnimalController {
         return ResponseEntity.ok(animals); // HTTP 200
     }
 
-    // GET / api/v1/anmimal/{id} - retrieves a single animal by id
+    // GET / api/v1/animals/{id} - retrieves a single animal by id
     @GetMapping("/{id}")
     public ResponseEntity<AnimalResponseDTO> getAnimalById(@PathVariable Long id){
 
