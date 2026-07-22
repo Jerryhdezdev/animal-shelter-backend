@@ -30,14 +30,14 @@ public class AdoptionController {
     @GetMapping
     public ResponseEntity<List<AdoptionResponseDTO>> getAllAdoptions() {
         List<AdoptionResponseDTO> adoptions = adoptionService.getAllAdoptions();
-        return ResponseEntity.ok(adoptions); // HTTP 200
+        return ResponseEntity.ok(adoptions);
     }
 
     // GET /api/v1/adoptions/{id} - retrieves a single adoption by id
     @GetMapping("/{id}")
     public ResponseEntity<AdoptionResponseDTO> getAdoptionById(@PathVariable long id) {
         AdoptionResponseDTO response = adoptionService.getAdoptionById(id);
-        return ResponseEntity.ok(response); // HTTP 200
+        return ResponseEntity.ok(response);
     }
 
     // POST /api/v1/adoptions — creates a new adoption
@@ -54,21 +54,21 @@ public class AdoptionController {
             @PathVariable Long id,
             @RequestParam AdoptionStatus newStatus) {
         AdoptionResponseDTO response = adoptionService.updateAdoption(id, newStatus);
-        return ResponseEntity.ok(response); // HTTP 200
+        return ResponseEntity.ok(response);
     }
 
     // PATCH /api/v1/adoptions/{id}/cancel - cancels an adoption (user only)
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<AdoptionResponseDTO> cancelAdoption(@PathVariable Long id) {
         AdoptionResponseDTO response = adoptionService.cancelAdoption(id);
-        return ResponseEntity.ok(response); // HTTP 200
+        return ResponseEntity.ok(response);
     }
 
     // DELETE /api/v1/adoptions/{id} - deletes an existing adoption
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAdoption(@PathVariable Long id) {
         adoptionService.deleteAdoption(id);
-        return ResponseEntity.noContent().build(); // HTTP 204
+        return ResponseEntity.noContent().build();
     }
 
 }
