@@ -1,6 +1,9 @@
 package com.jerryhdez.animalshelter.domain.service;
 
 import com.jerryhdez.animalshelter.domain.model.Animal;
+import com.jerryhdez.animalshelter.web.mapper.AnimalMapper;
+import com.jerryhdez.animalshelter.web.dto.AnimalResponseDTO;
+import com.jerryhdez.animalshelter.web.dto.AnimalRequestDTO;
 import com.jerryhdez.animalshelter.domain.repository.AnimalRepository;
 import com.jerryhdez.animalshelter.exception.AnimalNotFoundException;
 import org.springframework.stereotype.Service;
@@ -11,47 +14,58 @@ import java.util.List;
 public class AnimalService {
 
     private final AnimalRepository animalRepository;
+    private final AnimalMapper animalMapper;
 
-    public AnimalService(AnimalRepository animalRepository) {
+    public AnimalService(AnimalRepository animalRepository,  AnimalMapper animalMapper) {
+
         this.animalRepository = animalRepository;
+        this.animalMapper = animalMapper;
     }
 
     // Gets all animals from the database
-    public List<Animal> getAllAnimals() {
-        return animalRepository.findAll();
+    public List<AnimalResponseDTO> getAllAnimals() {
+        return animalRepository.findAll()
+                .stream()
+                .map(animalMapper::toResponse)
+                .toList();
     }
 
     // Retrieves a single animal by id - Throws exception if not found
-    public Animal getAnimalById(Long id) {
-        return animalRepository.findById(id)
-                .orElseThrow(() -> new AnimalNotFoundException(id));
+    public AnimalResponseDTO getAnimalById(Long id) {
+        Animal animal = animalRepository.findById(id)
+                .orElseThrow(()-> new AnimalNotFoundException(id));
+        return animalMapper.toResponse(animal);
     }
 
-    // Saves a new animal to the database
-    public Animal saveAnimal(Animal animal) {
-        return animalRepository.save(animal);
+    // Creates a new animal to the database
+    public AnimalResponseDTO createAnimal(AnimalRequestDTO request) {
+        Animal animal = animalMapper.toEntity(request);
+        Animal savedAnimal = animalRepository.save(animal);
+
+        return animalMapper.toResponse(savedAnimal);
     }
 
     // Updates an existing animal - throws exception if not found
-    public Animal updateAnimal(Long id, Animal updateAnimal){
+    public AnimalResponseDTO updateAnimal(Long id, AnimalRequestDTO request) {
 
         // First verifies the animal exists - throws exceptions if not
         Animal existingAnimal = animalRepository.findById(id)
                 .orElseThrow(() -> new AnimalNotFoundException(id));
 
         // Updates only the fields that are allowed to change
-        existingAnimal.setName(updateAnimal.getName());
-        existingAnimal.setSpecies(updateAnimal.getSpecies());
-        existingAnimal.setSex(updateAnimal.getSex());
-        existingAnimal.setBirthDate(updateAnimal.getBirthDate());
-        existingAnimal.setWeight(updateAnimal.getWeight());
-        existingAnimal.setSize(updateAnimal.getSize());
-        existingAnimal.setVaccinationStatus(updateAnimal.getVaccinationStatus());
-        existingAnimal.setSterilizationStatus(updateAnimal.getSterilizationStatus());
-        existingAnimal.setDescription(updateAnimal.getDescription());
+        existingAnimal.setName(request.getName());
+        existingAnimal.setSpecies(request.getAnimalSpecies());
+        existingAnimal.setSex(request.getAnimalSex());
+        existingAnimal.setBirthDate(request.getBirthDate());
+        existingAnimal.setWeight(request.getWeight());
+        existingAnimal.setSize(request.getAnimalSize());
+        existingAnimal.setVaccinationStatus(request.getAnimalVaccinationStatus());
+        existingAnimal.setSterilizationStatus(request.getAnimalSterilizationStatus());
+        existingAnimal.setDescription(request.getDescription());
 
         // Saves and returns the updated animal
-        return animalRepository.save(existingAnimal);
+        Animal saved = animalRepository.save(existingAnimal);
+        return animalMapper.toResponse(saved);
     }
 
     // Deletes an existing animal - throws exception if not found
