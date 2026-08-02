@@ -1,6 +1,9 @@
 package com.jerryhdez.animalshelter.domain.service;
 
 import com.jerryhdez.animalshelter.domain.model.Animal;
+import com.jerryhdez.animalshelter.web.dto.AnimalRequestDTO;
+import com.jerryhdez.animalshelter.web.dto.AnimalResponseDTO;
+import com.jerryhdez.animalshelter.web.mapper.AnimalMapper;
 import com.jerryhdez.animalshelter.domain.enums.AnimalAdoptionStatus;
 import com.jerryhdez.animalshelter.domain.enums.AnimalSpecies;
 import com.jerryhdez.animalshelter.domain.enums.AnimalSex;
@@ -32,13 +35,15 @@ public class AnimalServiceTest {
     @Mock
     private AnimalRepository animalRepository;
 
+    @Mock
+    private AnimalMapper animalMapper;
+
     @InjectMocks
     private AnimalService animalService;
 
     // Helper method - builds a test animal to reuse across tests
-    private Animal buildTestAnimal() {
+    private Animal createTestAnimal() {
         Animal animal = new Animal();
-        animal.setId(1L);
         animal.setName("Max");
         animal.setSpecies(AnimalSpecies.DOG);
         animal.setSex(AnimalSex.MALE);
@@ -53,16 +58,33 @@ public class AnimalServiceTest {
         return animal;
     }
 
+    private AnimalResponseDTO createTestAnimalResponseDTO() {
+        AnimalResponseDTO responseDTO = new AnimalResponseDTO();
+        responseDTO.setId(1L);
+        responseDTO.setName("Max");
+        responseDTO.setDescription("Max is a friendly dog");
+        return responseDTO;
+    }
+
+    private AnimalRequestDTO createTestAnimalRequestDTO() {
+        AnimalRequestDTO requestDTO = new AnimalRequestDTO();
+        requestDTO.setName("Max Updated");
+        return requestDTO;
+    }
+
     @Test
     void shouldReturnAllAnimals(){
-        // ARRANGE - prepare test data
-        Animal animal = buildTestAnimal();
+        // ARRANGE
+        Animal animal = createTestAnimal();
+        AnimalResponseDTO responseDTO = createTestAnimalResponseDTO();
+
         when(animalRepository.findAll()).thenReturn(List.of(animal));
+        when(animalMapper.toResponse(animal)).thenReturn(responseDTO);
 
-        // ACT - execute the method
-        List<Animal> result = animalService.getAllAnimals();
+        // ACT
+        List<AnimalResponseDTO> result = animalService.getAllAnimals();
 
-        // ASSERT - verify the result
+        // ASSERT
         assertThat(result).isNotEmpty();
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getName()).isEqualTo("Max");
@@ -72,15 +94,17 @@ public class AnimalServiceTest {
     @Test
     void shouldReturnAnimalWhenIdExists(){
         // ARRANGE
-        Animal animal = buildTestAnimal();
+        Animal animal = createTestAnimal();
+        AnimalResponseDTO responseDTO = createTestAnimalResponseDTO();
+
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
+        when(animalMapper.toResponse(animal)).thenReturn(responseDTO);
 
         // ACT
-        Animal result = animalService.getAnimalById(1L);
+        AnimalResponseDTO result = animalService.getAnimalById(1L);
 
         // ASSERT
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("Max");
         verify(animalRepository, times(1)).findById(1L);
     }
@@ -93,43 +117,51 @@ public class AnimalServiceTest {
         // ACT + ASSERT
         assertThatThrownBy(() -> animalService.getAnimalById(13L))
                 .isInstanceOf(AnimalNotFoundException.class)
-                .hasMessageContaining("Animal not found");
+                .hasMessageContaining("Animal with id 13 not found" );
         verify(animalRepository, times(1)).findById(13L);
     }
 
     @Test
-    void shouldSaveAnimalSuccessfully(){
+    void shouldCreateAnimal(){
         // ARRANGE
-        Animal animal = buildTestAnimal();
-        when(animalRepository.save(any(Animal.class))).thenReturn(animal);
+        AnimalRequestDTO requestDTO = new AnimalRequestDTO();
+        requestDTO.setName("Max");
+
+        Animal animal = createTestAnimal();
+        AnimalResponseDTO responseDTO = createTestAnimalResponseDTO();
+
+        when(animalMapper.toEntity(requestDTO)).thenReturn(animal);
+        when(animalRepository.save(animal)).thenReturn(animal);
+        when(animalMapper.toResponse(animal)).thenReturn(responseDTO);
 
         // ACT
-        Animal result = animalService.saveAnimal(animal);
+        AnimalResponseDTO result = animalService.createAnimal(requestDTO);
 
         // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Max");
-        verify(animalRepository, times(1)).save(any(Animal.class));
+        verify(animalRepository, times(1)).save(animal);
     }
 
     @Test
-    void shouldUpdateAnimalSuccessfully(){
+    void shouldUpdateAnimal(){
         // ARRANGE
-        Animal existingAnimal = buildTestAnimal();
-        Animal updatedAnimal = buildTestAnimal();
-        updatedAnimal.setName("Max Updated");
-        updatedAnimal.setWeight(new BigDecimal("35.0"));
+        Animal existingAnimal = createTestAnimal();
+        Animal updatedAnimal = createTestAnimal();
+        AnimalResponseDTO responseDTO = createTestAnimalResponseDTO();
+        AnimalRequestDTO requestDTO = createTestAnimalRequestDTO();
+        responseDTO.setName("Max Updated");
 
         when(animalRepository.findById(1L)).thenReturn(Optional.of(existingAnimal));
         when(animalRepository.save(any(Animal.class))).thenReturn(updatedAnimal);
+        when(animalMapper.toResponse(updatedAnimal)).thenReturn(responseDTO);
 
         // ACT
-        Animal result = animalService.updateAnimal(1L, updatedAnimal);
+        AnimalResponseDTO result = animalService.updateAnimal(1L, requestDTO);
 
         // ASSERT
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Max Updated");
-        assertThat(result.getWeight()).isEqualTo(new BigDecimal("35.0"));
         verify(animalRepository, times(1)).findById(1L);
         verify(animalRepository, times(1)).save(any(Animal.class));
     }
@@ -137,20 +169,20 @@ public class AnimalServiceTest {
     @Test
     void shouldThrowExceptionWhenUpdatingNonexistentAnimal(){
         // ARRANGE
-        Animal updatedAnimal = buildTestAnimal();
+        AnimalRequestDTO requestDTO = createTestAnimalRequestDTO();
         when(animalRepository.findById(13L)).thenReturn(Optional.empty());
 
         // ACT + ASSERT
-        assertThatThrownBy(() -> animalService.updateAnimal(13L, updatedAnimal))
+        assertThatThrownBy(() -> animalService.updateAnimal(13L, requestDTO))
                 .isInstanceOf(AnimalNotFoundException.class)
-                .hasMessageContaining("Animal not found");
+                .hasMessageContaining("Animal with id 13 not found" );
         verify(animalRepository, times(1)).findById(13L);
     }
 
     @Test
-    void shouldDeleteAnimalSuccessfully(){
+    void shouldDeleteAnimal(){
         // ARRANGE
-        Animal animal = buildTestAnimal();
+        Animal animal = createTestAnimal();
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
 
         // ACT
@@ -169,7 +201,7 @@ public class AnimalServiceTest {
         // ACT + ASSERT
         assertThatThrownBy(() -> animalService.deleteAnimal(13L))
                 .isInstanceOf(AnimalNotFoundException.class)
-                .hasMessageContaining("Animal not found");
+                .hasMessageContaining("Animal with id 13 not found" );
         verify(animalRepository, times(1)).findById(13L);
     }
 
