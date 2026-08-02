@@ -61,7 +61,7 @@ class AdoptionServiceTest {
         return dto;
     }
 
-    private Adoption buildTestAdoption() {
+    private Adoption createTestAdoption() {
         Adoption adoption = new Adoption();
         adoption.setId(1L);
         adoption.setAnimal(createTestAnimal());
@@ -73,7 +73,7 @@ class AdoptionServiceTest {
     @Test
     void shouldReturnAllAdoptions() {
         // ARRANGE
-        Adoption adoption = buildTestAdoption();
+        Adoption adoption = createTestAdoption();
         AdoptionResponseDTO dto = createTestResponseDTO();
 
         when(adoptionRepository.findAll()).thenReturn(List.of(adoption));
@@ -93,7 +93,7 @@ class AdoptionServiceTest {
     @Test
     void shouldReturnAdoptionWhenIdExists() {
         // ARRANGE
-        Adoption adoption = buildTestAdoption();
+        Adoption adoption = createTestAdoption();
         AdoptionResponseDTO dto = createTestResponseDTO();
 
         when(adoptionRepository.findById(1L)).thenReturn(Optional.of(adoption));
@@ -129,7 +129,7 @@ class AdoptionServiceTest {
 
         User testUser = createTestUser();
         Animal testAnimal = createTestAnimal();
-        Adoption testAdoption = buildTestAdoption();
+        Adoption testAdoption = createTestAdoption();
         AdoptionResponseDTO dto = createTestResponseDTO();
 
         when(animalRepository.findById(1L)).thenReturn(Optional.of(testAnimal));
@@ -151,8 +151,8 @@ class AdoptionServiceTest {
     @Test
     void shouldUpdateAdoptionSuccessfully() {
         // ARRANGE
-        Adoption existingAdoption = buildTestAdoption();
-        Adoption updatedAdoption = buildTestAdoption();
+        Adoption existingAdoption = createTestAdoption();
+        Adoption updatedAdoption = createTestAdoption();
         AdoptionResponseDTO dto = createTestResponseDTO();
         dto.setAdoptionStatus("APPROVED");
 
@@ -187,7 +187,7 @@ class AdoptionServiceTest {
     @Test
     void shouldDeleteAdoptionSuccessfully() {
         // ARRANGE
-        Adoption existingAdoption = buildTestAdoption();
+        Adoption existingAdoption = createTestAdoption();
         when(adoptionRepository.findById(1L)).thenReturn(Optional.of(existingAdoption));
 
         // ACT
