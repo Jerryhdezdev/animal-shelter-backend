@@ -124,7 +124,7 @@ public class AnimalServiceTest {
     @Test
     void shouldCreateAnimal(){
         // ARRANGE
-        AnimalRequestDTO requestDTO = new AnimalRequestDTO();
+        AnimalRequestDTO requestDTO = createTestAnimalRequestDTO();
         requestDTO.setName("Max");
 
         Animal animal = createTestAnimal();

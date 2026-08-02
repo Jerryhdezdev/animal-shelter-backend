@@ -54,11 +54,11 @@ class AdoptionServiceTest {
     }
 
     private AdoptionResponseDTO createTestResponseDTO() {
-        AdoptionResponseDTO dto = new AdoptionResponseDTO();
-        dto.setAnimalName("Fiona");
-        dto.setUserName("Jerry Hdez");
-        dto.setAdoptionStatus("REQUESTED");
-        return dto;
+        AdoptionResponseDTO responseDTO = new AdoptionResponseDTO();
+        responseDTO.setAnimalName("Fiona");
+        responseDTO.setUserName("Jerry Hdez");
+        responseDTO.setAdoptionStatus("REQUESTED");
+        return responseDTO;
     }
 
     private Adoption createTestAdoption() {
@@ -74,10 +74,10 @@ class AdoptionServiceTest {
     void shouldReturnAllAdoptions() {
         // ARRANGE
         Adoption adoption = createTestAdoption();
-        AdoptionResponseDTO dto = createTestResponseDTO();
+        AdoptionResponseDTO responseDTO = createTestResponseDTO();
 
         when(adoptionRepository.findAll()).thenReturn(List.of(adoption));
-        when(adoptionMapper.toResponse(adoption)).thenReturn(dto);
+        when(adoptionMapper.toResponse(adoption)).thenReturn(responseDTO);
 
         // ACT
         List<AdoptionResponseDTO> result = adoptionService.getAllAdoptions();
@@ -94,10 +94,10 @@ class AdoptionServiceTest {
     void shouldReturnAdoptionWhenIdExists() {
         // ARRANGE
         Adoption adoption = createTestAdoption();
-        AdoptionResponseDTO dto = createTestResponseDTO();
+        AdoptionResponseDTO responseDTO = createTestResponseDTO();
 
         when(adoptionRepository.findById(1L)).thenReturn(Optional.of(adoption));
-        when(adoptionMapper.toResponse(adoption)).thenReturn(dto);
+        when(adoptionMapper.toResponse(adoption)).thenReturn(responseDTO);
 
         // ACT
         AdoptionResponseDTO result = adoptionService.getAdoptionById(1L);
@@ -122,23 +122,23 @@ class AdoptionServiceTest {
     }
 
     @Test
-    void shouldCreateAdoptionSuccessfully() {
+    void shouldCreateAdoption() {
         // ARRANGE
-        AdoptionRequestDTO request = new AdoptionRequestDTO();
-        request.setAnimalId(1L);
+        AdoptionRequestDTO requestDTO = new AdoptionRequestDTO();
+        requestDTO.setAnimalId(1L);
 
         User testUser = createTestUser();
         Animal testAnimal = createTestAnimal();
         Adoption testAdoption = createTestAdoption();
-        AdoptionResponseDTO dto = createTestResponseDTO();
+        AdoptionResponseDTO responseDTO = createTestResponseDTO();
 
         when(animalRepository.findById(1L)).thenReturn(Optional.of(testAnimal));
-        when(adoptionMapper.toEntity(request, testUser, testAnimal)).thenReturn(testAdoption);
+        when(adoptionMapper.toEntity(requestDTO, testUser, testAnimal)).thenReturn(testAdoption);
         when(adoptionRepository.save(testAdoption)).thenReturn(testAdoption);
-        when(adoptionMapper.toResponse(testAdoption)).thenReturn(dto);
+        when(adoptionMapper.toResponse(testAdoption)).thenReturn(responseDTO);
 
         // ACT
-        AdoptionResponseDTO result = adoptionService.createAdoption(request, testUser);
+        AdoptionResponseDTO result = adoptionService.createAdoption(requestDTO, testUser);
 
         // ASSERT
         assertThat(result).isNotNull();
@@ -149,16 +149,16 @@ class AdoptionServiceTest {
     }
 
     @Test
-    void shouldUpdateAdoptionSuccessfully() {
+    void shouldUpdateAdoption() {
         // ARRANGE
         Adoption existingAdoption = createTestAdoption();
         Adoption updatedAdoption = createTestAdoption();
-        AdoptionResponseDTO dto = createTestResponseDTO();
-        dto.setAdoptionStatus("APPROVED");
+        AdoptionResponseDTO responseDTO = createTestResponseDTO();
+        responseDTO.setAdoptionStatus("APPROVED");
 
         when(adoptionRepository.findById(1L)).thenReturn(Optional.of(existingAdoption));
         when(adoptionRepository.save(any(Adoption.class))).thenReturn(updatedAdoption);
-        when(adoptionMapper.toResponse(updatedAdoption)).thenReturn(dto);
+        when(adoptionMapper.toResponse(updatedAdoption)).thenReturn(responseDTO);
 
         // ACT
         AdoptionResponseDTO result = adoptionService.updateAdoption(1L, AdoptionStatus.APPROVED);
@@ -185,7 +185,7 @@ class AdoptionServiceTest {
     }
 
     @Test
-    void shouldDeleteAdoptionSuccessfully() {
+    void shouldDeleteAdoption() {
         // ARRANGE
         Adoption existingAdoption = createTestAdoption();
         when(adoptionRepository.findById(1L)).thenReturn(Optional.of(existingAdoption));
