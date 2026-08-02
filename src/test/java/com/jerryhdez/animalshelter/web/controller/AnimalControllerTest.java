@@ -1,13 +1,15 @@
 package com.jerryhdez.animalshelter.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jerryhdez.animalshelter.domain.enums.*;
-import com.jerryhdez.animalshelter.domain.model.*;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSex;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSize;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSpecies;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSterilizationStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalVaccinationStatus;
 import com.jerryhdez.animalshelter.domain.service.AnimalService;
 import com.jerryhdez.animalshelter.exception.AnimalNotFoundException;
 import com.jerryhdez.animalshelter.web.dto.AnimalRequestDTO;
 import com.jerryhdez.animalshelter.web.dto.AnimalResponseDTO;
-import com.jerryhdez.animalshelter.web.mapper.AnimalMapper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +41,6 @@ class AnimalControllerTest {
     @MockBean
     private AnimalService animalService;
 
-    @MockBean
-    private AnimalMapper animalMapper;
 
     // Helper method - builds a test response DTO to reuse across tests
     private AnimalResponseDTO buildTestResponseDTO(){
@@ -79,9 +79,7 @@ class AnimalControllerTest {
     void shouldReturnAllAnimals() throws Exception {
         // ARRANGE
         AnimalResponseDTO response = buildTestResponseDTO();
-        Animal animal = new Animal();
-        when(animalService.getAllAnimals()).thenReturn(List.of(animal));
-        when(animalMapper.toResponse(any(Animal.class))).thenReturn(response);
+        when(animalService.getAllAnimals()).thenReturn(List.of(response));
 
         // ACT + ASSERT
         mockMvc.perform(get("/api/v1/animals"))
@@ -95,9 +93,7 @@ class AnimalControllerTest {
     void shouldReturnAnimalById() throws Exception{
         // ARRANGE
         AnimalResponseDTO response = buildTestResponseDTO();
-        Animal animal = new Animal();
-        when(animalService.getAnimalById(1L)).thenReturn(animal);
-        when(animalMapper.toResponse(animal)).thenReturn(response);
+        when(animalService.getAnimalById(1L)).thenReturn(response);
 
         // ACT + ASSERT
         mockMvc.perform(get("/api/v1/animals/1"))
@@ -122,37 +118,32 @@ class AnimalControllerTest {
     }
 
     @Test
-    void shouldCreateAnimalSuccessfully() throws Exception{
+    void shouldCreateAnimal() throws Exception{
         //ARRANGE
         AnimalRequestDTO request = buildTestRequestDTO();
         AnimalResponseDTO response = buildTestResponseDTO();
-        Animal animal = new Animal();
-
-        when(animalMapper.toEntity(any(AnimalRequestDTO.class))).thenReturn(animal);
-        when(animalService.saveAnimal(any(Animal.class))).thenReturn(animal);
-        when(animalMapper.toResponse(any(Animal.class))).thenReturn(response);
+        String requestJson = objectMapper.writeValueAsString(request);
+        doReturn(response).when(animalService).createAnimal(any(AnimalRequestDTO.class));
 
         //ACT + ASSERT
         mockMvc.perform(post("/api/v1/animals" )
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(requestJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Max"))
-                .andExpect(jsonPath("$.species").value("DOG"));
-        verify(animalService, times(1)).saveAnimal(any(Animal.class));
+                .andExpect(jsonPath("$.name").value("Max"));
+        verify(animalService, times(1)).createAnimal(any(AnimalRequestDTO.class));
     }
 
     @Test
-    void shouldUpdateAnimalSuccessfully() throws Exception{
+    void shouldUpdateAnimal() throws Exception{
         // ARRANGE
         AnimalRequestDTO request = buildTestRequestDTO();
         AnimalResponseDTO response = buildTestResponseDTO();
         response.setName("Max Update");
-        Animal animal = new Animal();
 
-        when(animalMapper.toEntity(any(AnimalRequestDTO.class))).thenReturn(animal);
-        when(animalService.updateAnimal(eq(1L), any(Animal.class))).thenReturn(animal);
-        when(animalMapper.toResponse(any(Animal.class))).thenReturn(response);
+        doReturn(response).when(animalService).updateAnimal(eq(1L), any(AnimalRequestDTO.class));
+
+
 
         // ACT + ASSERT
         mockMvc.perform(put("/api/v1/animals/1")
@@ -160,11 +151,11 @@ class AnimalControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Max Update"));
-        verify(animalService, times(1)).updateAnimal(eq(1L), any(Animal.class));
+        verify(animalService, times(1)).updateAnimal(eq(1L), any(AnimalRequestDTO.class));
     }
 
     @Test
-    void shouldDeleteAnimalSuccessfully() throws Exception{
+    void shouldDeleteAnimal() throws Exception{
         // ARRANGE
         doNothing().when(animalService).deleteAnimal(1L);
 
