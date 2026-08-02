@@ -2,10 +2,12 @@ package com.jerryhdez.animalshelter.domain.service;
 
 import com.jerryhdez.animalshelter.domain.model.User;
 import com.jerryhdez.animalshelter.web.dto.UserRequestDTO;
+import com.jerryhdez.animalshelter.web.dto.UserResponseDTO;
 import com.jerryhdez.animalshelter.domain.enums.UserRoles;
 import com.jerryhdez.animalshelter.domain.enums.UserStatus;
 import com.jerryhdez.animalshelter.domain.repository.UserRepository;
 import com.jerryhdez.animalshelter.exception.UserNotFoundException;
+import com.jerryhdez.animalshelter.web.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,55 +16,60 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
-    // Gets all user from the database
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+
+    public List<UserResponseDTO> getAllUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toResponse)
+                .toList();
     }
 
-    // Retrieves a single user by id - throws exception is not found
-    public User getUserById(Long id){
-        return userRepository.findById(id)
-                .orElseThrow(()->new UserNotFoundException(id));
+    public UserResponseDTO getUserById(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+        return userMapper.toResponse(user);
     }
 
     // Saves a new user to the database
-    public User saveUser(User user, UserRequestDTO dto){
+    public UserResponseDTO createUser(UserRequestDTO request){
 
-        // Checks if passwords match
-        if (!dto.getPassword().equals(dto.getConfirmPassword())){
+
+        if (!request.getPassword().equals(request.getConfirmPassword())){
             throw new IllegalArgumentException("Passwords do not match");
         }
-        // System automatically assigns default values
+
+        User user = userMapper.toEntity(request);
         user.setRole(UserRoles.ADOPTER);
         user.setStatus(UserStatus.PENDING);
 
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        return userMapper.toResponse(saved);
     }
 
     // Updates an existing user - throws exception is not found
-    public User updateUser(Long id, User updateUser, UserRequestDTO dto){
+    public UserResponseDTO updateUser(Long id, UserRequestDTO request){
 
-        // First verifies if the user exists - Throws exceptions if not
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(()->new UserNotFoundException(id));
-
-        // Checks if passwords match
-        if (!dto.getPassword().equals(dto.getConfirmPassword())){
+        if (!request.getPassword().equals(request.getConfirmPassword())){
             throw new IllegalArgumentException("Passwords do not match");
         }
 
-        // Updates only the fields that are allowed to change
-        existingUser.setFirstName(updateUser.getFirstName());
-        existingUser.setLastName(updateUser.getLastName());
-        existingUser.setEmail(updateUser.getEmail());
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(()->new UserNotFoundException(id));
 
-        // Saves and returns the user updated
-        return userRepository.save(existingUser);
+        existingUser.setFirstName(request.getFirstName());
+        existingUser.setLastName(request.getLastName());
+        existingUser.setEmail(request.getEmail());
+
+        User saved = userRepository.save(existingUser);
+        return userMapper.toResponse(saved);
     }
 
     // Deletes an existing user - Throws exception if not found
