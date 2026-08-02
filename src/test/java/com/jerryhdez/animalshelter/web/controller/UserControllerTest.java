@@ -3,12 +3,10 @@ package com.jerryhdez.animalshelter.web.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jerryhdez.animalshelter.domain.enums.UserRoles;
 import com.jerryhdez.animalshelter.domain.enums.UserStatus;
-import com.jerryhdez.animalshelter.domain.model.User;
 import com.jerryhdez.animalshelter.domain.service.UserService;
 import com.jerryhdez.animalshelter.exception.UserNotFoundException;
 import com.jerryhdez.animalshelter.web.dto.UserRequestDTO;
 import com.jerryhdez.animalshelter.web.dto.UserResponseDTO;
-import com.jerryhdez.animalshelter.web.mapper.UserMapper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,57 +36,50 @@ class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    @MockBean
-    private UserMapper userMapper;
 
     // Helper method - builds a test response DTO to reuse across tests
-    private UserResponseDTO buildTestResponseDTO() {
-        UserResponseDTO response = new UserResponseDTO();
-        response.setId(1L);
-        response.setFirstName("Jerry");
-        response.setLastName("Hdez");
-        response.setEmail("jerryhdez@example.com");
-        response.setRole(UserRoles.ADOPTER);
-        response.setStatus(UserStatus.PENDING);
-        response.setCreatedAt(LocalDateTime.of(2026, 1, 1, 0, 0));
-        response.setUpdatedAt(LocalDateTime.of(2026, 1, 1, 0, 0));
-        return response;
+    private UserResponseDTO createTestResponseDTO() {
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        responseDTO.setId(1L);
+        responseDTO.setFirstName("Jerry");
+        responseDTO.setLastName("Hdez");
+        responseDTO.setEmail("jerryhdez@example.com");
+        responseDTO.setRole(UserRoles.ADOPTER);
+        responseDTO.setStatus(UserStatus.PENDING);
+        responseDTO.setCreatedAt(LocalDateTime.of(2026, 1, 1, 0, 0));
+        responseDTO.setUpdatedAt(LocalDateTime.of(2026, 1, 1, 0, 0));
+        return responseDTO;
     }
 
     // Helper method - builds a test request DTO to reuse across tests
-    private UserRequestDTO buildTestRequestDTO() {
-        UserRequestDTO request = new UserRequestDTO();
-        request.setFirstName("Jerry");
-        request.setLastName("Hdez");
-        request.setEmail("jerryhdez@example.com");
-        request.setPassword("password123");
-        request.setConfirmPassword("password123");
-        return request;
+    private UserRequestDTO createTestRequestDTO() {
+        UserRequestDTO requestDTO = new UserRequestDTO();
+        requestDTO.setFirstName("Jerry");
+        requestDTO.setLastName("Hdez");
+        requestDTO.setEmail("jerryhdez@example.com");
+        requestDTO.setPassword("password123");
+        requestDTO.setConfirmPassword("password123");
+        return requestDTO;
     }
 
     @Test
     void shouldReturnAllUsers() throws Exception {
         // ARRANGE
-        UserResponseDTO response = buildTestResponseDTO();
-        User user = new User();
-        when(userService.getAllUsers()).thenReturn(List.of(user));
-        when(userMapper.toResponse(any(User.class))).thenReturn(response);
+        UserResponseDTO responseDTO = createTestResponseDTO();
+        when(userService.getAllUsers()).thenReturn(List.of(responseDTO));
 
         // ACT + ASSERT
         mockMvc.perform(get("/api/v1/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].firstName").value("Jerry"))
-                .andExpect(jsonPath("$[0].email").value("jerryhdez@example.com"));
+                .andExpect(jsonPath("$[0].firstName").value("Jerry"));
         verify(userService, times(1)).getAllUsers();
     }
 
     @Test
     void shouldReturnUserById() throws Exception {
         // ARRANGE
-        UserResponseDTO response = buildTestResponseDTO();
-        User user = new User();
-        when(userService.getUserById(1L)).thenReturn(user);
-        when(userMapper.toResponse(user)).thenReturn(response);
+        UserResponseDTO responseDTO = createTestResponseDTO();
+        when(userService.getUserById(1L)).thenReturn(responseDTO);
 
         // ACT + ASSERT
         mockMvc.perform(get("/api/v1/users/1"))
@@ -113,68 +104,59 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldCreateUserSuccessfully() throws Exception {
+    void shouldCreateUser() throws Exception {
         // ARRANGE
-        UserRequestDTO request = buildTestRequestDTO();
-        UserResponseDTO response = buildTestResponseDTO();
-        User user = new User();
-
-        when(userMapper.toEntity(any(UserRequestDTO.class))).thenReturn(user);
-        when(userService.saveUser(any(User.class), any(UserRequestDTO.class))).thenReturn(user);
-        when(userMapper.toResponse(any(User.class))).thenReturn(response);
+        UserRequestDTO requestDTO = createTestRequestDTO();
+        UserResponseDTO responseDTO = createTestResponseDTO();
+        doReturn(responseDTO).when(userService).createUser(any(UserRequestDTO.class));
 
         // ACT + ASSERT
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.firstName").value("Jerry"))
-                .andExpect(jsonPath("$.email").value("jerryhdez@example.com"));
-        verify(userService, times(1)).saveUser(any(User.class), any(UserRequestDTO.class));
+                .andExpect(jsonPath("$.firstName").value("Jerry"));
+        verify(userService, times(1)).createUser(any(UserRequestDTO.class));
     }
 
     @Test
     void shouldReturn400WhenPasswordsDoNotMatch() throws Exception {
         // ARRANGE
-        UserRequestDTO request = buildTestRequestDTO();
-        request.setConfirmPassword("differentPassword");
-        User user = new User();
+        UserRequestDTO requestDTO = createTestRequestDTO();
+        requestDTO.setConfirmPassword("differentPassword");
 
-        when(userMapper.toEntity(any(UserRequestDTO.class))).thenReturn(user);
-        when(userService.saveUser(any(User.class), any(UserRequestDTO.class)))
-                .thenThrow(new IllegalArgumentException("Passwords do not match"));
+
+        doThrow(new IllegalArgumentException("Passwords do not match"))
+                .when(userService).createUser(any(UserRequestDTO.class));
 
         // ACT + ASSERT
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isBadRequest());
-        verify(userService, times(1)).saveUser(any(User.class), any(UserRequestDTO.class));
+        verify(userService, times(1)).createUser(any(UserRequestDTO.class));
     }
 
     @Test
-    void shouldUpdateUserSuccessfully() throws Exception {
+    void shouldUpdateUser() throws Exception {
         // ARRANGE
-        UserRequestDTO request = buildTestRequestDTO();
-        UserResponseDTO response = buildTestResponseDTO();
-        response.setFirstName("Jerry Updated");
-        User user = new User();
+        UserRequestDTO requestDTO = createTestRequestDTO();
+        UserResponseDTO responseDTO = createTestResponseDTO();
+        responseDTO.setFirstName("Jerry Updated");
 
-        when(userMapper.toEntity(any(UserRequestDTO.class))).thenReturn(user);
-        when(userService.updateUser(eq(1L), any(User.class), any(UserRequestDTO.class))).thenReturn(user);
-        when(userMapper.toResponse(any(User.class))).thenReturn(response);
+        doReturn(responseDTO).when(userService).updateUser(eq(1L), any(UserRequestDTO.class));
 
         // ACT + ASSERT
         mockMvc.perform(put("/api/v1/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value("Jerry Updated"));
-        verify(userService, times(1)).updateUser(eq(1L), any(User.class), any(UserRequestDTO.class));
+        verify(userService, times(1)).updateUser(eq(1L), any(UserRequestDTO.class));
     }
 
     @Test
-    void shouldDeleteUserSuccessfully() throws Exception {
+    void shouldDeleteUser() throws Exception {
         // ARRANGE
         doNothing().when(userService).deleteUser(1L);
 

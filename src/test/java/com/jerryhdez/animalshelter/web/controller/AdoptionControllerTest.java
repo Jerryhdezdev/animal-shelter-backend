@@ -39,25 +39,25 @@ public class AdoptionControllerTest {
 
     // Helpers
     private AdoptionResponseDTO createTestResponseDTO(){
-        AdoptionResponseDTO response = new AdoptionResponseDTO();
-        response.setId(1L);
-        response.setAnimalName("Fiona");
-        response.setUserName("Jerry Hdez");
-        response.setAdoptionStatus("REQUESTED");
-        return response;
+        AdoptionResponseDTO responseDTO = new AdoptionResponseDTO();
+        responseDTO.setId(1L);
+        responseDTO.setAnimalName("Fiona");
+        responseDTO.setUserName("Jerry Hdez");
+        responseDTO.setAdoptionStatus("REQUESTED");
+        return responseDTO;
     }
 
     private AdoptionRequestDTO createTestRequestDTO(){
-        AdoptionRequestDTO request = new AdoptionRequestDTO();
-        request.setAnimalId(1L);
-        return request;
+        AdoptionRequestDTO requestDTO = new AdoptionRequestDTO();
+        requestDTO.setAnimalId(1L);
+        return requestDTO;
     }
 
     @Test
     void shouldReturnAllAdoptions() throws Exception {
         //  ARRANGE
-        AdoptionResponseDTO dto = createTestResponseDTO();
-        when(adoptionService.getAllAdoptions()).thenReturn(List.of(dto));
+        AdoptionResponseDTO responseDTO = createTestResponseDTO();
+        when(adoptionService.getAllAdoptions()).thenReturn(List.of(responseDTO));
 
         // ACT + ASSERT
         mockMvc.perform(get("/api/v1/adoptions"))
@@ -70,8 +70,8 @@ public class AdoptionControllerTest {
     @Test
     void shouldReturnAdoptionById() throws Exception {
         // ARRANGE
-        AdoptionResponseDTO dto = createTestResponseDTO();
-        when(adoptionService.getAdoptionById(1L)).thenReturn(dto);
+        AdoptionResponseDTO responseDTO = createTestResponseDTO();
+        when(adoptionService.getAdoptionById(1L)).thenReturn(responseDTO);
 
         // ACT + ASSERT
         mockMvc.perform(get("/api/v1/adoptions/1"))
@@ -98,12 +98,12 @@ public class AdoptionControllerTest {
     @Test
     void shouldCreateAdoption() throws Exception {
         // ARRANGE
-        AdoptionResponseDTO response = createTestResponseDTO();
-        AdoptionRequestDTO request = createTestRequestDTO();
+        AdoptionResponseDTO responseDTO = createTestResponseDTO();
+        AdoptionRequestDTO requestDTO = createTestRequestDTO();
 
-        String requestJson = objectMapper.writeValueAsString(request);
+        String requestJson = objectMapper.writeValueAsString(requestDTO);
 
-        doReturn(response).when(adoptionService).createAdoption(any(), any());
+        doReturn(responseDTO).when(adoptionService).createAdoption(any(), any());
 
         // ACT + ASSERT
         mockMvc.perform(post("/api/v1/adoptions")
@@ -119,11 +119,11 @@ public class AdoptionControllerTest {
     @Test
     void shouldUpdateAdoption() throws Exception {
         // ARRANGE
-        AdoptionResponseDTO response = createTestResponseDTO();
-        response.setAdoptionStatus("APPROVED");
+        AdoptionResponseDTO responseDTO = createTestResponseDTO();
+        responseDTO.setAdoptionStatus("APPROVED");
 
 
-        when(adoptionService.updateAdoption(eq(1L), eq(AdoptionStatus.APPROVED))).thenReturn(response);
+        when(adoptionService.updateAdoption(eq(1L), eq(AdoptionStatus.APPROVED))).thenReturn(responseDTO);
 
         // ACT + ASSERT
         mockMvc.perform(patch("/api/v1/adoptions/1/status")

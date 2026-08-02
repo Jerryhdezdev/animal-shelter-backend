@@ -43,43 +43,43 @@ class AnimalControllerTest {
 
 
     // Helper method - builds a test response DTO to reuse across tests
-    private AnimalResponseDTO buildTestResponseDTO(){
-        AnimalResponseDTO response = new AnimalResponseDTO();
-        response.setId(1L);
-        response.setName("Max");
-        response.setSpecies("DOG");
-        response.setSex("MALE");
-        response.setBirthDate(LocalDate.of(2026,1,1));
-        response.setWeight(new BigDecimal("25.5"));
-        response.setSize("LARGE");
-        response.setVaccinationStatus("FULL_VACCINATED");
-        response.setSterilizationStatus("STERILIZED");
-        response.setAdoptionStatus("INTAKE_ASSESSMENT");
-        response.setIntakeDate(LocalDate.now());
-        response.setDescription("Max is a friendly dog");
-        return response;
+    private AnimalResponseDTO createTestResponseDTO(){
+        AnimalResponseDTO responseDTO = new AnimalResponseDTO();
+        responseDTO.setId(1L);
+        responseDTO.setName("Max");
+        responseDTO.setSpecies("DOG");
+        responseDTO.setSex("MALE");
+        responseDTO.setBirthDate(LocalDate.of(2026,1,1));
+        responseDTO.setWeight(new BigDecimal("25.5"));
+        responseDTO.setSize("LARGE");
+        responseDTO.setVaccinationStatus("FULL_VACCINATED");
+        responseDTO.setSterilizationStatus("STERILIZED");
+        responseDTO.setAdoptionStatus("INTAKE_ASSESSMENT");
+        responseDTO.setIntakeDate(LocalDate.now());
+        responseDTO.setDescription("Max is a friendly dog");
+        return responseDTO;
     }
 
     // Helper method - builds a test request DTO to reuse across tests
-    private AnimalRequestDTO buildTestRequestDTO(){
-        AnimalRequestDTO request = new AnimalRequestDTO();
-        request.setName("Max");
-        request.setAnimalSpecies(AnimalSpecies.DOG);
-        request.setAnimalSex(AnimalSex.MALE);
-        request.setBirthDate(LocalDate.of(2026,1,1));
-        request.setWeight(new BigDecimal("25.5"));
-        request.setAnimalSize(AnimalSize.LARGE);
-        request.setAnimalVaccinationStatus(AnimalVaccinationStatus.FULL_VACCINATED);
-        request.setAnimalSterilizationStatus(AnimalSterilizationStatus.STERILIZED);
-        request.setDescription("Max is a friendly dog");
-        return request;
+    private AnimalRequestDTO createTestRequestDTO(){
+        AnimalRequestDTO requestDTO = new AnimalRequestDTO();
+        requestDTO.setName("Max");
+        requestDTO.setAnimalSpecies(AnimalSpecies.DOG);
+        requestDTO.setAnimalSex(AnimalSex.MALE);
+        requestDTO.setBirthDate(LocalDate.of(2026,1,1));
+        requestDTO.setWeight(new BigDecimal("25.5"));
+        requestDTO.setAnimalSize(AnimalSize.LARGE);
+        requestDTO.setAnimalVaccinationStatus(AnimalVaccinationStatus.FULL_VACCINATED);
+        requestDTO.setAnimalSterilizationStatus(AnimalSterilizationStatus.STERILIZED);
+        requestDTO.setDescription("Max is a friendly dog");
+        return requestDTO;
     }
 
     @Test
     void shouldReturnAllAnimals() throws Exception {
         // ARRANGE
-        AnimalResponseDTO response = buildTestResponseDTO();
-        when(animalService.getAllAnimals()).thenReturn(List.of(response));
+        AnimalResponseDTO responseDTO = createTestResponseDTO();
+        when(animalService.getAllAnimals()).thenReturn(List.of(responseDTO));
 
         // ACT + ASSERT
         mockMvc.perform(get("/api/v1/animals"))
@@ -92,8 +92,8 @@ class AnimalControllerTest {
     @Test
     void shouldReturnAnimalById() throws Exception{
         // ARRANGE
-        AnimalResponseDTO response = buildTestResponseDTO();
-        when(animalService.getAnimalById(1L)).thenReturn(response);
+        AnimalResponseDTO responseDTO = createTestResponseDTO();
+        when(animalService.getAnimalById(1L)).thenReturn(responseDTO);
 
         // ACT + ASSERT
         mockMvc.perform(get("/api/v1/animals/1"))
@@ -120,10 +120,10 @@ class AnimalControllerTest {
     @Test
     void shouldCreateAnimal() throws Exception{
         //ARRANGE
-        AnimalRequestDTO request = buildTestRequestDTO();
-        AnimalResponseDTO response = buildTestResponseDTO();
-        String requestJson = objectMapper.writeValueAsString(request);
-        doReturn(response).when(animalService).createAnimal(any(AnimalRequestDTO.class));
+        AnimalRequestDTO requestDTO =  createTestRequestDTO();
+        AnimalResponseDTO responseDTO = createTestResponseDTO();
+        String requestJson = objectMapper.writeValueAsString(requestDTO);
+        doReturn(responseDTO).when(animalService).createAnimal(any(AnimalRequestDTO.class));
 
         //ACT + ASSERT
         mockMvc.perform(post("/api/v1/animals" )
@@ -137,18 +137,18 @@ class AnimalControllerTest {
     @Test
     void shouldUpdateAnimal() throws Exception{
         // ARRANGE
-        AnimalRequestDTO request = buildTestRequestDTO();
-        AnimalResponseDTO response = buildTestResponseDTO();
-        response.setName("Max Update");
+        AnimalRequestDTO requestDTO = createTestRequestDTO();
+        AnimalResponseDTO responseDTO = createTestResponseDTO();
+        responseDTO.setName("Max Update");
 
-        doReturn(response).when(animalService).updateAnimal(eq(1L), any(AnimalRequestDTO.class));
+        doReturn(responseDTO).when(animalService).updateAnimal(eq(1L), any(AnimalRequestDTO.class));
 
 
 
         // ACT + ASSERT
         mockMvc.perform(put("/api/v1/animals/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Max Update"));
         verify(animalService, times(1)).updateAnimal(eq(1L), any(AnimalRequestDTO.class));
