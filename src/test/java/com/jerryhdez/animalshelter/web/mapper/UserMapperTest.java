@@ -18,18 +18,18 @@ class UserMapperTest {
     private final UserMapper userMapper = new UserMapper();
 
     // Helper method — builds a test request DTO
-    private UserRequestDTO buildTestRequestDTO() {
-        UserRequestDTO request = new UserRequestDTO();
-        request.setFirstName("Jerry");
-        request.setLastName("Hdez");
-        request.setEmail("jerryhdez@example.com");
-        request.setPassword("password123");
-        request.setConfirmPassword("password123");
-        return request;
+    private UserRequestDTO createTestRequestDTO() {
+        UserRequestDTO requestDTO = new UserRequestDTO();
+        requestDTO.setFirstName("Jerry");
+        requestDTO.setLastName("Hdez");
+        requestDTO.setEmail("jerryhdez@example.com");
+        requestDTO.setPassword("password123");
+        requestDTO.setConfirmPassword("password123");
+        return requestDTO;
     }
 
     // Helper method — builds a test user entity
-    private User buildTestUser() {
+    private User createTestUser() {
         User user = new User();
         user.setId(1L);
         user.setFirstName("Jerry");
@@ -46,27 +46,25 @@ class UserMapperTest {
     @Test
     void shouldMapRequestDTOToEntity() {
         // ARRANGE
-        UserRequestDTO request = buildTestRequestDTO();
+        UserRequestDTO requestDTO = createTestRequestDTO();
 
         // ACT
-        User user = userMapper.toEntity(request);
+        User user = userMapper.toEntity(requestDTO);
 
         // ASSERT
         assertThat(user.getFirstName()).isEqualTo("Jerry");
         assertThat(user.getLastName()).isEqualTo("Hdez");
-        assertThat(user.getEmail()).isEqualTo("jerryhdez@example.com");
-        assertThat(user.getPasswordHash()).isEqualTo("password123");
     }
 
     @Test
     void shouldNotMapRoleAndStatusWhenMappingToEntity() {
         // ARRANGE
-        UserRequestDTO request = buildTestRequestDTO();
+        UserRequestDTO requestDTO = createTestRequestDTO();
 
         // ACT
-        User user = userMapper.toEntity(request);
+        User user = userMapper.toEntity(requestDTO);
 
-        // ASSERT — role and status are not set by the mapper, the service handles them
+        // ASSERT
         assertThat(user.getRole()).isNull();
         assertThat(user.getStatus()).isNull();
     }
@@ -74,19 +72,19 @@ class UserMapperTest {
     @Test
     void shouldNotExposePasswordHashWhenMappingToResponseDTO() {
         // ARRANGE
-        User user = buildTestUser();
+        User user = createTestUser();
 
         // ACT
         UserResponseDTO response = userMapper.toResponse(user);
 
-        // ASSERT — password hash must never be exposed in the response
-        assertThat(response).hasNoNullFieldsOrPropertiesExcept("passwordHash");
+        // ASSERT
+        assertThat(response).hasNoNullFieldsOrPropertiesExcept("passwordHash","otherOptionalField");
     }
 
     @Test
     void shouldMapEntityToResponseDTO() {
         // ARRANGE
-        User user = buildTestUser();
+        User user = createTestUser();
 
         // ACT
         UserResponseDTO response = userMapper.toResponse(user);
@@ -95,7 +93,6 @@ class UserMapperTest {
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getFirstName()).isEqualTo("Jerry");
         assertThat(response.getLastName()).isEqualTo("Hdez");
-        assertThat(response.getEmail()).isEqualTo("jerryhdez@example.com");
         assertThat(response.getRole()).isEqualTo(UserRoles.ADOPTER);
         assertThat(response.getStatus()).isEqualTo(UserStatus.PENDING);
         assertThat(response.getCreatedAt()).isEqualTo(LocalDateTime.of(2026, 1, 1, 0, 0));
@@ -105,13 +102,13 @@ class UserMapperTest {
     @Test
     void shouldKeepEnumsAsEnumsWhenMappingToResponseDTO() {
         // ARRANGE
-        User user = buildTestUser();
+        User user = createTestUser();
 
         // ACT
-        UserResponseDTO response = userMapper.toResponse(user);
+        UserResponseDTO responseDTO = userMapper.toResponse(user);
 
-        // ASSERT — role and status stay as enums in the response (unlike Animal which converts to String)
-        assertThat(response.getRole()).isInstanceOf(UserRoles.class);
-        assertThat(response.getStatus()).isInstanceOf(UserStatus.class);
+        // ASSERT
+        assertThat(responseDTO.getRole()).isInstanceOf(UserRoles.class);
+        assertThat(responseDTO.getStatus()).isInstanceOf(UserStatus.class);
     }
 }

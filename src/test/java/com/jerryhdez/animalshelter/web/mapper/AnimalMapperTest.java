@@ -1,7 +1,12 @@
 package com.jerryhdez.animalshelter.web.mapper;
 
-import com.jerryhdez.animalshelter.domain.enums.*;
-import com.jerryhdez.animalshelter.domain.model.*;
+import com.jerryhdez.animalshelter.domain.enums.AnimalVaccinationStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSterilizationStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalAdoptionStatus;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSex;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSize;
+import com.jerryhdez.animalshelter.domain.enums.AnimalSpecies;
+import com.jerryhdez.animalshelter.domain.model.Animal;
 import com.jerryhdez.animalshelter.web.dto.AnimalRequestDTO;
 import com.jerryhdez.animalshelter.web.dto.AnimalResponseDTO;
 
@@ -18,22 +23,22 @@ class AnimalMapperTest {
     private final AnimalMapper animalMapper = new AnimalMapper();
 
     // Helper method — builds a test request DTO
-    private AnimalRequestDTO buildTestRequestDTO() {
-        AnimalRequestDTO request = new AnimalRequestDTO();
-        request.setName("Max");
-        request.setAnimalSpecies(AnimalSpecies.DOG);
-        request.setAnimalSex(AnimalSex.MALE);
-        request.setBirthDate(LocalDate.of(2021, 5, 10));
-        request.setWeight(new BigDecimal("25.5"));
-        request.setAnimalSize(AnimalSize.LARGE);
-        request.setAnimalVaccinationStatus(AnimalVaccinationStatus.FULL_VACCINATED);
-        request.setAnimalSterilizationStatus(AnimalSterilizationStatus.STERILIZED);
-        request.setDescription("Max is a friendly dog");
-        return request;
+    private AnimalRequestDTO createTestRequestDTO() {
+        AnimalRequestDTO requestDTO = new AnimalRequestDTO();
+        requestDTO.setName("Max");
+        requestDTO.setAnimalSpecies(AnimalSpecies.DOG);
+        requestDTO.setAnimalSex(AnimalSex.MALE);
+        requestDTO.setBirthDate(LocalDate.of(2021, 5, 10));
+        requestDTO.setWeight(new BigDecimal("25.5"));
+        requestDTO.setAnimalSize(AnimalSize.LARGE);
+        requestDTO.setAnimalVaccinationStatus(AnimalVaccinationStatus.FULL_VACCINATED);
+        requestDTO.setAnimalSterilizationStatus(AnimalSterilizationStatus.STERILIZED);
+        requestDTO.setDescription("Max is a friendly dog");
+        return requestDTO;
     }
 
     // Helper method — builds a test animal entity
-    private Animal buildTestAnimal() {
+    private Animal createTestAnimal() {
         Animal animal = new Animal();
         animal.setId(1L);
         animal.setName("Max");
@@ -53,10 +58,10 @@ class AnimalMapperTest {
     @Test
     void shouldMapRequestDTOToEntity() {
         // ARRANGE
-        AnimalRequestDTO request = buildTestRequestDTO();
+        AnimalRequestDTO requestDTO = createTestRequestDTO();
 
         // ACT
-        Animal animal = animalMapper.toEntity(request);
+        Animal animal = animalMapper.toEntity(requestDTO);
 
         // ASSERT
         assertThat(animal.getName()).isEqualTo("Max");
@@ -73,10 +78,10 @@ class AnimalMapperTest {
     @Test
     void shouldSetIntakeDateAutomaticallyWhenMappingToEntity() {
         // ARRANGE
-        AnimalRequestDTO request = buildTestRequestDTO();
+        AnimalRequestDTO requestDTO = createTestRequestDTO();
 
         // ACT
-        Animal animal = animalMapper.toEntity(request);
+        Animal animal = animalMapper.toEntity(requestDTO);
 
         // ASSERT — intakeDate should be set automatically to today
         assertThat(animal.getIntakeDate()).isEqualTo(LocalDate.now());
@@ -85,10 +90,10 @@ class AnimalMapperTest {
     @Test
     void shouldSetStatusToIntakeAssessmentWhenMappingToEntity() {
         // ARRANGE
-        AnimalRequestDTO request = buildTestRequestDTO();
+        AnimalRequestDTO requestDTO = createTestRequestDTO();
 
         // ACT
-        Animal animal = animalMapper.toEntity(request);
+        Animal animal = animalMapper.toEntity(requestDTO);
 
         // ASSERT — every new animal starts with INTAKE_ASSESSMENT
         assertThat(animal.getStatus()).isEqualTo(AnimalAdoptionStatus.INTAKE_ASSESSMENT);
@@ -97,39 +102,39 @@ class AnimalMapperTest {
     @Test
     void shouldMapEntityToResponseDTO() {
         // ARRANGE
-        Animal animal = buildTestAnimal();
+        Animal animal = createTestAnimal();
 
         // ACT
-        AnimalResponseDTO response = animalMapper.toResponse(animal);
+        AnimalResponseDTO responseDTO = animalMapper.toResponse(animal);
 
         // ASSERT
-        assertThat(response.getId()).isEqualTo(1L);
-        assertThat(response.getName()).isEqualTo("Max");
-        assertThat(response.getSpecies()).isEqualTo("DOG");
-        assertThat(response.getSex()).isEqualTo("MALE");
-        assertThat(response.getBirthDate()).isEqualTo(LocalDate.of(2021, 5, 10));
-        assertThat(response.getWeight()).isEqualTo(new BigDecimal("25.5"));
-        assertThat(response.getSize()).isEqualTo("LARGE");
-        assertThat(response.getVaccinationStatus()).isEqualTo("FULL_VACCINATED");
-        assertThat(response.getSterilizationStatus()).isEqualTo("STERILIZED");
-        assertThat(response.getAdoptionStatus()).isEqualTo("INTAKE_ASSESSMENT");
-        assertThat(response.getDescription()).isEqualTo("Max is a friendly dog");
+        assertThat(responseDTO.getId()).isEqualTo(1L);
+        assertThat(responseDTO.getName()).isEqualTo("Max");
+        assertThat(responseDTO.getSpecies()).isEqualTo("DOG");
+        assertThat(responseDTO.getSex()).isEqualTo("MALE");
+        assertThat(responseDTO.getBirthDate()).isEqualTo(LocalDate.of(2021, 5, 10));
+        assertThat(responseDTO.getWeight()).isEqualTo(new BigDecimal("25.5"));
+        assertThat(responseDTO.getSize()).isEqualTo("LARGE");
+        assertThat(responseDTO.getVaccinationStatus()).isEqualTo("FULL_VACCINATED");
+        assertThat(responseDTO.getSterilizationStatus()).isEqualTo("STERILIZED");
+        assertThat(responseDTO.getAdoptionStatus()).isEqualTo("INTAKE_ASSESSMENT");
+        assertThat(responseDTO.getDescription()).isEqualTo("Max is a friendly dog");
     }
 
     @Test
     void shouldConvertEnumsToStringsWhenMappingToResponseDTO() {
         // ARRANGE
-        Animal animal = buildTestAnimal();
+        Animal animal = createTestAnimal();
 
         // ACT
-        AnimalResponseDTO response = animalMapper.toResponse(animal);
+        AnimalResponseDTO responseDTO = animalMapper.toResponse(animal);
 
         // ASSERT — enums must be converted to String in the response
-        assertThat(response.getSpecies()).isInstanceOf(String.class);
-        assertThat(response.getSex()).isInstanceOf(String.class);
-        assertThat(response.getSize()).isInstanceOf(String.class);
-        assertThat(response.getVaccinationStatus()).isInstanceOf(String.class);
-        assertThat(response.getSterilizationStatus()).isInstanceOf(String.class);
-        assertThat(response.getAdoptionStatus()).isInstanceOf(String.class);
+        assertThat(responseDTO.getSpecies()).isInstanceOf(String.class);
+        assertThat(responseDTO.getSex()).isInstanceOf(String.class);
+        assertThat(responseDTO.getSize()).isInstanceOf(String.class);
+        assertThat(responseDTO.getVaccinationStatus()).isInstanceOf(String.class);
+        assertThat(responseDTO.getSterilizationStatus()).isInstanceOf(String.class);
+        assertThat(responseDTO.getAdoptionStatus()).isInstanceOf(String.class);
     }
 }

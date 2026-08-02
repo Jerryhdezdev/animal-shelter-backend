@@ -32,9 +32,9 @@ private User createTestUser(){
 }
 
     private AdoptionRequestDTO createTestRequestDTO() {
-        AdoptionRequestDTO dto = new AdoptionRequestDTO();
-        dto.setAnimalId(1L);
-        return dto;
+        AdoptionRequestDTO requestDTO = new AdoptionRequestDTO();
+        requestDTO.setAnimalId(1L);
+        return requestDTO;
     }
 
 private Adoption createTestAdoption(){
